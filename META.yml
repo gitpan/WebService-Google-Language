@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               WebService-Google-Language
-version:            0.12
+version:            0.12_01
 abstract:           Perl interface to the Google AJAX Language API
 author:
     - Henning Manske <hma@cpan.org>
@@ -9,6 +9,7 @@ distribution_type:  module
 configure_requires:
     ExtUtils::MakeMaker:  6.17
 build_requires:
+    HTTP::Response:  0
     JSON:            2.0
     LWP::UserAgent:  0
     Test::More:      0.62
@@ -21,7 +22,7 @@ resources:
     bugtracker:  http://rt.cpan.org/Public/Dist/Display.html?Name=WebService-Google-Language
     homepage:    http://search.cpan.org/dist/WebService-Google-Language/
     license:     http://dev.perl.org/licenses/
-    repository:  http://github.com/hma/WebService-Google-Language
+    repository:  https://github.com/hma/WebService-Google-Language
 no_index:
     directory:
         - t

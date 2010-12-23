@@ -3,62 +3,73 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
+use Test::More;
 
 use JSON 2.0 ();
 use LWP::UserAgent;
 
 use WebService::Google::Language;
 
-my $service = WebService::Google::Language->new( referer => 'http://search.cpan.org/~hma/' );
-my ($set, $obj, $gotten);
+use constant REFERER => 'http://example.com/';
 
+my %accessors = (
+  json    => JSON->new,
+  ua      => LWP::UserAgent->new,
+  referer => REFERER,
+);
 
+plan tests => (9 * keys %accessors) + 1;
 
-#
-#  json
-#
+my $service = WebService::Google::Language->new(REFERER);
 
-can_ok $service, 'json';
+for my $accessor (sort keys %accessors) {
+  can_ok $service, $accessor;
 
-# check if constructor has auto-generated the json object
-isa_ok $service->json, 'JSON';
+  my $error = qr/'$accessor' requires/;
+  eval { $service->$accessor(undef) };
+  like   $@, $error, "$accessor (setter) can't undef";
 
-eval { $service->json('foo') };
-like   $@, qr/requires an object based on/, 'json (setter) failed as expected due to invalid parameter';
-eval { $service->json(undef) };
-ok     $@, q{json can't undef};
+  my $thing = $accessors{$accessor};
+  my ($correct, $corrupt);
 
-$set = JSON->new;
-$obj = $service->json($set);
-ok     defined $obj, 'json (setter) returned something';
-is     $obj, $service, 'json can be chained';
+  if (my $class = ref $thing) {
+    $correct = $thing;
+    $corrupt = 'foo';
 
-$gotten = $service->json;
-ok     defined $gotten, 'json (getter) returned something';
-is     $gotten, $set, 'json returned initial object';
+    # check if constructor has auto-generated the object
+    isa_ok $service->$accessor, $class;
+  }
+  else {
+    $correct = 'http://search.cpan.org/dist/WebService-Google-Language/';
+    $corrupt = ' ';
 
+    is   $service->$accessor, $thing, "$accessor (getter) returned value from construction";
+  }
 
+  eval { $service->$accessor($corrupt) };
+  like   $@, $error, "$accessor (setter) failed as expected due to invalid parameter";
 
-#
-#  ua
-#
+  my $value = $service->$accessor($correct);
+  ok     defined $value,   "$accessor (setter) returned something";
+  is     $value, $service, "$accessor can be chained";
 
-can_ok $service, 'ua';
+  my $gotten = $service->$accessor;
+  ok     defined $gotten, "$accessor (getter) returned something";
+  is     $gotten, $correct, "$accessor returned given value";
 
-# check if constructor has auto-generated the ua object
-isa_ok $service->ua, 'LWP::UserAgent';
+  $gotten = WebService::Google::Language->new(
+    $accessor ne 'referer' ? REFERER : (),
+    $accessor => $correct
+  )->$accessor;
+  is     $gotten, $correct, "$accessor as parameter to constructor";
+}
 
-eval { $service->ua('foo') };
-like   $@, qr/requires an object based on/, 'ua (setter) failed as expected due to invalid parameter';
-eval { $service->ua(undef) };
-ok     $@, q{ua can't undef};
+{
+  my $error;
 
-$set = LWP::UserAgent->new;
-$obj = $service->ua($set);
-ok     defined $obj, 'ua (setter) returned something';
-is     $obj, $service, 'ua can be chained';
+  no warnings 'redefine';
+  local *Carp::croak = sub { $error = shift };
 
-$gotten = $service->ua;
-ok     defined $gotten, 'ua (getter) returned something';
-is     $gotten, $set, 'ua returned initial object';
+  $service->referer(undef);
+  like $error, qr/'referer' requires/, 'referer (setter) error outside eval';
+}

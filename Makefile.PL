@@ -25,7 +25,7 @@ my $META = {
   resources => {
     homepage   => "http://search.cpan.org/dist/$dist/",
     bugtracker => "http://rt.cpan.org/Public/Dist/Display.html?Name=$dist",
-    repository => "http://github.com/hma/$dist",
+    repository => "https://github.com/hma/$dist",
     license    => 'http://dev.perl.org/licenses/',
   },
 };
@@ -42,6 +42,7 @@ my %args = (
   ( $knows_configure_requires ? ( CONFIGURE_REQUIRES => { 'ExtUtils::MakeMaker' => '6.17' } ) : () ),
 
   BUILD_REQUIRES => {
+    'HTTP::Response' => '0',
     'JSON'           => '2.0',
     'LWP::UserAgent' => '0',
     'Test::More'     => '0.62',
