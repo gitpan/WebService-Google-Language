@@ -1,5 +1,10 @@
 Revision history for Perl extension WebService-Google-Language
 
+0.14    Nov 20, 2011
+
+        - Add deprecation warnings
+        - Disable live tests by default
+
 0.13    Dec 31, 2010
 
         - FIX: URL maximum length for GET is 2073 (+1 octet)

@@ -5,9 +5,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.13';
-
-$VERSION = eval $VERSION;
+our $VERSION = '0.14';
 
 use Carp ();
 use JSON 2.0 ();
@@ -260,13 +258,29 @@ sub confidence {
 
 
 
-1;
+$VERSION = eval $VERSION;
 
 __END__
 
 =head1 NAME
 
 WebService::Google::Language - Perl interface to the Google AJAX Language API
+
+=head1 DEPRECATION WARNING
+
+Please take note of this statement by Google (see links):
+"With the exception of the Translate v2 API, which is now available as a
+paid service, the APIs included in this family have all been deprecated."
+
+B<The v1 API, which this module is based on, WILL BE SHUT OFF COMPLETELY
+on Dec 1, 2011>
+(see L<http://code.google.com/apis/language/translate/overview.html>).
+
+The live tests of this module already started failing sporadically
+on Oct 29 and are now disabled by default.
+To check if the API is still working try:
+
+  export WGL_FORCE_LIVE_TESTS=1 && perl -Ilib -T t/05-methods.t
 
 =head1 SYNOPSIS
 
@@ -539,7 +553,7 @@ of URLs when using GET request method.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2008-2010 Henning Manske. All rights reserved.
+Copyright (c) 2008-2011 Henning Manske. All rights reserved.
 
 This module is free software. You can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
